@@ -1,46 +1,56 @@
-        .data
-        # Não há dados inicializados na seção .data
-
         .text
         .globl main
 main:
-        # Prologo
-        addiu   $sp, $sp, -32    # Alocar espaço na pilha
-        sw      $fp, 28($sp)     # Salvar o frame pointer anterior
-        sw      $ra, 24($sp)     # Salvar o endereço de retorno
-        move    $fp, $sp         # Atualizar o frame pointer
+        # Prologue (configuração da pilha)
+        addiu   $sp, $sp, -32
+        sw      $fp, 28($sp)
+        move    $fp, $sp
 
-        # Inicialização das variáveis
-        li      $s0, 1           # a = 1
-        li      $s1, 1           # b = 1
+        # Inicialização das variáveis na memória
+        li      $2, 1                # Carrega 1 em $2
+        sw      $2, 16($fp)          # a = 1 (memória: offset 16)
+        sw      $2, 20($fp)          # b = 1 (memória: offset 20)
 
-        # c = a + b
-        add     $s2, $s0, $s1    # c = a + b
+        # c = a + b (R-type)
+        lw      $3, 16($fp)          # Carrega a em $3
+        lw      $2, 20($fp)          # Carrega b em $2
+        nop                           # Hazard de dados: espera carregamento
+        addu    $2, $3, $2           # $2 = a + b (R-type)
+        sw      $2, 12($fp)          # Armazena c (offset 12)
 
-        # c = c + 3
-        addi    $s2, $s2, 3      # c = c + 3
+        # c = c + 3 (Imediato)
+        lw      $2, 12($fp)          # Carrega c
+        nop                           # Hazard de dados
+        addiu   $2, $2, 3            # $2 = c + 3 (Imediato)
+        sw      $2, 12($fp)          # Armazena c
 
-        # Inicialização do loop
-        li      $s3, 0           # x = 0
+        # Inicializa x = 0 (memória: offset 8)
+        sw      $0, 8($fp)           # x = 0
 
-loop_start:
-        slti    $t0, $s3, 10     # $t0 = (x < 10) ? 1 : 0
-        beq     $t0, $zero, loop_end  # Se x >= 10, sair do loop
+loop:   # Loop sem 'j'
+        # c++ (memória -> registrador -> memória)
+        lw      $2, 12($fp)          # Carrega c
+        nop
+        addiu   $2, $2, 1            # Incrementa c
+        sw      $2, 12($fp)          # Armazena c
 
-        # c++
-        addi    $s2, $s2, 1      # c = c + 1
+        # x++ (memória -> registrador -> memória)
+        lw      $2, 8($fp)           # Carrega x
+        nop
+        addiu   $2, $2, 1            # Incrementa x
+        sw      $2, 8($fp)           # Armazena x
 
-        # x++
-        addi    $s3, $s3, 1      # x = x + 1
+        # Condição do loop (x < 10)
+        lw      $2, 8($fp)           # Carrega x
+        nop
+        slti    $2, $2, 10           # $2 = (x < 10) ? 1 : 0
+        bne     $2, $0, loop         # Branch se verdadeiro (sem 'j')
+        nop
 
-        j       loop_start       # Voltar ao início do loop
-
-loop_end:
-        # Epílogo
-        move    $sp, $fp         # Restaurar o stack pointer
-        lw      $ra, 24($sp)     # Restaurar o endereço de retorno
-        lw      $fp, 28($sp)     # Restaurar o frame pointer
-        addiu   $sp, $sp, 32     # Liberar espaço na pilha
-        jr      $ra              # Retornar da função
-
-        .end main
+        # Epílogo (retorno)
+        move    $2, $0               # return 0
+        move    $sp, $fp
+        lw      $fp, 28($sp)
+        addiu   $sp, $sp, 32
+        jr      $ra
+        nop
