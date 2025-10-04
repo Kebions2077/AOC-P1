@@ -1,43 +1,46 @@
+        .data
+        # Não há dados inicializados na seção .data
+
+        .text
+        .globl main
 main:
-        addiu   $sp,$sp,-32
-        sw      $fp,28($sp)
-        move    $fp,$sp
-        li      $2,1                        # 0x1
-        sw      $2,16($fp)
-        li      $2,1                        # 0x1
-        sw      $2,20($fp)
-        lw      $3,16($fp)
-        lw      $2,20($fp)
-        nop
-        addu    $2,$3,$2
-        sw      $2,12($fp)
-        lw      $2,12($fp)
-        nop
-        addiu   $2,$2,3
-        sw      $2,12($fp)
-        sw      $0,8($fp)
-        b       $L2
-        nop
+        # Prologo
+        addiu   $sp, $sp, -32    # Alocar espaço na pilha
+        sw      $fp, 28($sp)     # Salvar o frame pointer anterior
+        sw      $ra, 24($sp)     # Salvar o endereço de retorno
+        move    $fp, $sp         # Atualizar o frame pointer
 
-$L3:
-        lw      $2,12($fp)
-        nop
-        addiu   $2,$2,1
-        sw      $2,12($fp)
-        lw      $2,8($fp)
-        nop
-        addiu   $2,$2,1
-        sw      $2,8($fp)
-$L2:
-        lw      $2,8($fp)
-        nop
-        slt     $2,$2,10
-        bne     $2,$0,$L3
-        nop
+        # Inicialização das variáveis
+        li      $s0, 1           # a = 1
+        li      $s1, 1           # b = 1
 
-        move    $2,$0
-        move    $sp,$fp
-        lw      $fp,28($sp)
-        addiu   $sp,$sp,32
-        jr      $31
-        nop
+        # c = a + b
+        add     $s2, $s0, $s1    # c = a + b
+
+        # c = c + 3
+        addi    $s2, $s2, 3      # c = c + 3
+
+        # Inicialização do loop
+        li      $s3, 0           # x = 0
+
+loop_start:
+        slti    $t0, $s3, 10     # $t0 = (x < 10) ? 1 : 0
+        beq     $t0, $zero, loop_end  # Se x >= 10, sair do loop
+
+        # c++
+        addi    $s2, $s2, 1      # c = c + 1
+
+        # x++
+        addi    $s3, $s3, 1      # x = x + 1
+
+        j       loop_start       # Voltar ao início do loop
+
+loop_end:
+        # Epílogo
+        move    $sp, $fp         # Restaurar o stack pointer
+        lw      $ra, 24($sp)     # Restaurar o endereço de retorno
+        lw      $fp, 28($sp)     # Restaurar o frame pointer
+        addiu   $sp, $sp, 32     # Liberar espaço na pilha
+        jr      $ra              # Retornar da função
+
+        .end main
