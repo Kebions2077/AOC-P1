@@ -1,56 +1,43 @@
+        .data
+a:      .word   1               # int a = 1
+b:      .word   1               # int b = 1
+c:      .word   0               # int c = 0
+x:      .word   0               # int x = 0
+
         .text
-        .globl main
+        .globl  main
 main:
-        # Prologue (configuração da pilha)
-        addiu   $sp, $sp, -32
-        sw      $fp, 28($sp)
-        move    $fp, $sp
-
-        # Inicialização das variáveis na memória
-        li      $2, 1                # Carrega 1 em $2
-        sw      $2, 16($fp)          # a = 1 (memória: offset 16)
-        sw      $2, 20($fp)          # b = 1 (memória: offset 20)
-
         # c = a + b (R-type)
-        lw      $3, 16($fp)          # Carrega a em $3
-        lw      $2, 20($fp)          # Carrega b em $2
-        nop                           # Hazard de dados: espera carregamento
-        addu    $2, $3, $2           # $2 = a + b (R-type)
-        sw      $2, 12($fp)          # Armazena c (offset 12)
+        lw      $t0, a($zero)     # LW: Carrega a
+        lw      $t1, b($zero)     # LW: Carrega b
+        add     $t2, $t0, $t1     # R-type: c = a + b
 
         # c = c + 3 (Imediato)
-        lw      $2, 12($fp)          # Carrega c
-        nop                           # Hazard de dados
-        addiu   $2, $2, 3            # $2 = c + 3 (Imediato)
-        sw      $2, 12($fp)          # Armazena c
+        sw      $t2, c($zero)     # SW: Armazena c
+        lw      $t2, c($zero)     # LW: Carrega c
+        addi    $t2, $t2, 3       # Imediato: c += 3
+        sw      $t2, c($zero)     # SW: Armazena c
 
-        # Inicializa x = 0 (memória: offset 8)
-        sw      $0, 8($fp)           # x = 0
+        # x = 0
+        sw      $zero, x($zero)   # SW: x = 0
 
 loop:   # Loop sem 'j'
-        # c++ (memória -> registrador -> memória)
-        lw      $2, 12($fp)          # Carrega c
-        nop
-        addiu   $2, $2, 1            # Incrementa c
-        sw      $2, 12($fp)          # Armazena c
+        # c++ (SW)
+        lw      $t2, c($zero)     # LW: Carrega c
+        addi    $t2, $t2, 1       # Imediato: c++
+        sw      $t2, c($zero)     # SW: Armazena c
 
-        # x++ (memória -> registrador -> memória)
-        lw      $2, 8($fp)           # Carrega x
-        nop
-        addiu   $2, $2, 1            # Incrementa x
-        sw      $2, 8($fp)           # Armazena x
+        # x++ (SW)
+        lw      $t3, x($zero)     # LW: Carrega x
+        addi    $t3, $t3, 1       # Imediato: x++
+        sw      $t3, x($zero)     # SW: Armazena x
 
         # Condição do loop (x < 10)
-        lw      $2, 8($fp)           # Carrega x
-        nop
-        slti    $2, $2, 10           # $2 = (x < 10) ? 1 : 0
-        bne     $2, $0, loop         # Branch se verdadeiro (sem 'j')
+        lw      $t3, x($zero)     # LW: Carrega x para comparação
+        slti    $t4, $t3, 8      # $t4 = (x < 8) ? 1 : 0
+        bne     $t4, $zero, loop  # Branch se verdadeiro (sem 'j'/'jr')
         nop
 
-        # Epílogo (retorno)
-        move    $2, $0               # return 0
-        move    $sp, $fp
-        lw      $fp, 28($sp)
-        addiu   $sp, $sp, 32
+        # Retorno (mantido apenas para completude)
         jr      $ra
         nop
