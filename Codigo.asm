@@ -1,47 +1,33 @@
-.data
-a:      .word   1               # int a = 1
-b:      .word   1               # int b = 1
-c:      .word   0               # int c = 0
-x:      .word   0               # int x = 0
+		.data:
+	a:.word 1	  #int a 
+	b:.word 1	  #int b
+	c:.word 0	  #int c, variavel para realizar c=a+b
+	x:.word 0	  #int x, variavel para rodar o loop 
+	resultado:.word 0 #resultado final apos todas as operaçoes 
 
-.text
+		.text:
+	
+	main:
 
-main:
-    # c = a + b (R-type)
-    lw      $t0, a($zero)     # Carrega a
-    lw      $t1, b($zero)     # Carrega b
-    add     $t2, $t0, $t1     # c = a + b
+	
+	lw $t0,a	  #puxa a da memoria e coloca em t0
+	
+	lw $t1,b 	  #puxa b da memoria e coloca em t1
+	
+	add $t2,$t0,$t1		 #c=a+b e coloca em t2
+	
+	sw $t2,c		#salva o resultado de a+b na variavel c
+	
+	addi $t3,$t2,3 		 #realiza uma soma com o c e com o imediato 3 e coloca em t3
+	
+		
+	loop:
+	
+	lw $s0, x
+	
 
-    # c = c + 3 (Imediato)
-    sw      $t2, c($zero)     # Armazena c
-    lw      $t2, c($zero)     # Carrega c
-    addi    $t2, $t2, 3       # c += 3
-    sw      $t2, c($zero)     # Armazena c
-
-    # x = 0
-    sw      $zero, x($zero)   # x = 0
-
-loop:
-    # Loop sem 'j'
-    # c++ (SW)
-    lw      $t2, c($zero)     # Carrega c
-    addi    $t2, $t2, 1       # c++
-    sw      $t2, c($zero)     # Armazena c
-
-    # x++ (SW)
-    lw      $t3, x($zero)     # Carrega x
-    addi    $t3, $t3, 1       # x++
-    sw      $t3, x($zero)     # Armazena x
-
-    # Condição do loop (x < 8)
-    lw      $t3, x($zero)     # Carrega x para comparação
-    slti    $t4, $t3, 8       # $t4 = (x < 8) ? 1 : 0
-    bne     $t4, $zero, loop  # Branch se verdadeiro
-    nop
-
-    # Armazena o valor final de 'c' em $t3
-    lw      $t3, c($zero)     # Carrega o valor final de 'c' em $t3
-
-    # Retorno (mantido apenas para completude)
-    jr      $ra
-    nop
+	
+	
+	
+	
+	
