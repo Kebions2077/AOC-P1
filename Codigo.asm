@@ -10,13 +10,13 @@
 	main:
 
 	
-	lw $t0,a	  #puxa a da memoria e coloca em t0
+	lw $t0,a	  #puxa "a" da memoria e coloca em t0
 	
-	lw $t1,b 	  #puxa b da memoria e coloca em t1
+	lw $t1,b 	  #puxa "b" da memoria e coloca em t1
 	
 	add $t2,$t0,$t1		 #c=a+b e coloca em t2
 	
-	sw $t2,c		#salva o resultado de a+b na variavel c
+	sw $t2, c		#salva o resultado de a+b na variavel c
 	
 	addi $t3,$t2,3 		 #realiza uma soma com o c e com o imediato 3 e coloca em t3
 	
@@ -31,5 +31,6 @@
 	
 	
 	
+
 
 
