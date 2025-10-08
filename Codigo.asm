@@ -1,11 +1,11 @@
-		.data:
+		    .data:
 	a:.word 1	  #int a 
 	b:.word 1	  #int b
 	c:.word 0	  #int c, variavel para realizar c=a+b
 	x:.word 0	  #int x, variavel para rodar o loop 
-	resultado:.word 0 #resultado final apos todas as operaçoes 
+	resultado:	  .word 0 #resultado final apos todas as operaçoes 
 
-		.text:
+		    .text:
 	
 	main:
 
@@ -31,3 +31,4 @@
 	
 	
 	
+
