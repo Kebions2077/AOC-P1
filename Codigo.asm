@@ -23,7 +23,26 @@
 		
 	loop:
 	
-	lw $s0, x
+	 lw      $t2, c        # Carrega o valor de c em $t2
+
+        # Verifica se c == 8
+        li      $t4, 8        # Carrega o valor 8 em $t4
+        beq     $t2, $t4, fim_loop # Se c == 8, vai para fim_loop
+
+        # Incrementa c em 1
+        addi    $t2, $t2, 1
+        sw      $t2, c        # Armazena o novo valor de c na memória
+
+        # Volta para o início do loop
+        j       loop          # Desvia incondicionalmente para o início do loop
+
+    fim_loop:
+        # Armazena o resultado final
+        sw      $t2, resultado # Armazena o valor de c no resultado
+
+        # Termina o programa
+        li      $v0, 10       # Código para terminar o programa
+        syscall               
 	
 
 	
@@ -31,6 +50,7 @@
 	
 	
 	
+
 
 
 
