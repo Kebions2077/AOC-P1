@@ -14,19 +14,19 @@
 	
 	lw $t1,b 	  #puxa "b" da memoria e coloca em t1
 	
-	add $t2,$t0,$t1		 #c=a+b e coloca em t2
+	add $t2,$t0,$t1		 #c=a+b e coloca em t2, vale 2 aqui
 	
 	sw $t2, c		#salva o resultado de a+b na variavel c
 	
-	addi $t3,$t2,3 		 #realiza uma soma com o c e com o imediato 3 e coloca em t3
+	addi $t3,$t2,3 		 #realiza uma soma com o c e com o imediato 3 e coloca em t3,vale 5 aqui
 	
 		
 	loop:
 	
 	 lw      $t2, c        # Carrega o valor de c em $t2
 
-        # Verifica se c == 8
-        li      $t4, 8        # Carrega o valor 8 em $t4
+        # Verifica se c == 6
+        li      $t4, 6        # Carrega o valor 8 em $t4
         beq     $t2, $t4, fim_loop # Se c == 8, vai para fim_loop
 
         # Incrementa c em 1
@@ -50,6 +50,7 @@
 	
 	
 	
+
 
 
 
