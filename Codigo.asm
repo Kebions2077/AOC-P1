@@ -1,27 +1,32 @@
 .data
-a: .word 1
-b: .word 1
+a: .word 0
+b: .word 0
 c: .word 0
 x: .word 0
 resultado: .word 0
 
 .text
-main:
-    lw $t0, 0(a)
-    lw $t1, 0(b)
+main: 
+    la $t7, a
+    lw $t0, 0($t7)
+    la $t7, b
+    lw $t1, 0($t7)
     add $t2, $t0, $t1
-    sw $t2, 0(c)
+    la $t7, c
+    sw $t2, 0($t7)
     addi $t3, $t2, 3
 
 loop:
-    lw $t2, 0(c)
+    la $t7, c
+    lw $t2, 0($t7)
     li $t4, 6
     beq $t2, $t4, fim_loop
     addi $t2, $t2, 1
-    sw $t2, 0(c)
+    sw $t2, 0($t7)
     j loop
 
 fim_loop:
-    sw $t2, 0(resultado)
+    la $t7, resultado
+    sw $t2, 0($t7)
     li $v0, 10
     syscall
